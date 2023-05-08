@@ -1,3 +1,3 @@
-is_leader = True
-list_of_nodes_url = ["http://localhost:8001"]
-leader = "http://localhost:8000"
+IS_LEADER = True
+LIST_OF_NODES_URL = ["http://localhost:8001", 'http://localhost:8002']
+LEADER = "http://localhost:8000"
