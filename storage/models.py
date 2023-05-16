@@ -25,6 +25,6 @@ class CommitLength(SingletonModel):
 
 class Log(models.Model):
     term = models.IntegerField()
-    file = models.BinaryField()
+    file_blob = models.BinaryField()
     file_id = models.IntegerField()
     file_name = models.CharField(max_length=30)

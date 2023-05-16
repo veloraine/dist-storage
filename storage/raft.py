@@ -1,31 +1,16 @@
 from math import ceil
 from storage.models import Log
-
 import storage.timer
+from storage.utils import broadcast, send_to_node
 from .tasks import app
 import random
 from storage.constants import HEARTBEAT_DURATION, ELECTION_DURATION, SELF_UUID, Role
+from storage.dto.broadcast_request import BroadcastRequest
 from storage.dto.log_request import LogRequest
 from storage.dto.log_response import LogResponse
 from storage.dto.vote_request import VoteRequest
 from storage.dto.vote_response import VoteResponse
-from storage.services import add_vote_recieved, broadcast, append_log, convert_to_blob, get_acked_length_at, get_all_neighbours_id, get_commit_length, get_current_leader, get_current_role, get_current_term, get_election_timer_id, get_heartbeat_timer_id, get_log, get_sent_length_at, get_vote_received, get_voted_for, save_file, send_file_to_node, send_to_node, set_acked_length_at, set_commit_length, set_current_leader, set_current_role, set_current_term, set_election_timer_id, set_heartbeat_timer_id, set_log, set_sent_length_at, set_vote_received, set_voted_for
-
-
-# class LogEntry:
-#     def __init__(self, term, file, file_id, file_name):
-#         self.term = term
-#         self.file = file
-#         self.file_id = file_id
-#         self.file_name = file_name
-
-#     def to_dict(self):
-#         return {
-#             'term': self.term,
-#             'file': self.file,
-#             'file_id': self.file_id,
-#             'file_name': self.file_name
-#         }
+from storage.services import add_vote_recieved, append_log, get_acked_length_at, get_all_neighbours_id, get_commit_length, get_current_leader, get_current_role, get_current_term, get_election_timer_id, get_heartbeat_timer_id, get_log, get_sent_length_at, get_vote_received, get_voted_for, save_file, set_acked_length_at, set_commit_length, set_current_leader, set_current_role, set_current_term, set_election_timer_id, set_heartbeat_timer_id, set_log, set_sent_length_at, set_vote_received, set_voted_for
 
 
 def election_procedure():
@@ -109,28 +94,29 @@ def on_receive_vote_response(voter_id, term, vote_granted):
         cancel_election_timer()
 
 
-def request_to_broadcast(file, file_id):
+def request_to_broadcast(file_id, file_blob, file_name):
     if get_current_role() == Role.LEADER:
         print(f"AAAAAAAAAA Got request to broadcast {file_id}")
-        file_name = file.name
         print(f"AAAAAAAAAA file_name ", file_name)
-        blob = convert_to_blob(file)
-        print(f"AAAAAAAAAA blob ", blob)
+        print(f"AAAAAAAAAA blob ", file_blob)
         append_log(Log(
             term=get_current_term(),
-            file=blob,
+            file_blob=file_blob,
             file_name=file_name,
             file_id=file_id
         ))
-        # append_log(LogEntry(get_current_term(),
-        #                     file=blob, file_name=file_name, file_id=file_id).to_dict())
         set_acked_length_at(SELF_UUID, len(get_log()))
         for follower in get_all_neighbours_id():
             replicate_log(SELF_UUID, follower)
     else:
         # Forward request to currentLeader
-        send_file_to_node(get_current_leader(
-        ), f"/storage/broadcast-request?file_id={file_id}", file)
+        send_to_node(get_current_leader(),
+                     f"/storage/message/broadcast-request",
+                     BroadcastRequest(
+                         file_blob=file_blob,
+                         file_name=file_name,
+                         file_id=file_id
+        ))
 
 
 def heartbeat_procedure():
@@ -233,14 +219,13 @@ def commit_log_entries():
             break
 
 
-def apply_log(log_entry):
-    # set log.msg to db?
+def apply_log(log):
     print("========================================================")
-    print("Applying log entry: ", log_entry["file"])
-    print("with file id: ", log_entry["file_id"])
+    print("Applying log entry: ", log.file_blob)
+    print("with file id: ", log.file_id)
     print("========================================================")
-    save_file(log_entry["file"], log_entry["file_id"], log_entry["file_name"])
-    pass
+    save_file(file_blob=log.file_blob,
+              file_name=log.file_name, file_id=log.file_id)
 
 
 def restart_heartbeat_timer():

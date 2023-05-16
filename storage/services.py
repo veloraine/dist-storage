@@ -1,11 +1,7 @@
-import base64
-from io import BytesIO
-import json
-import requests
 from django.core.cache import cache
 from storage.constants import NEIGHBOURS, Role
+from storage.utils import blob_to_file
 from .models import CommitLength, CurrentTerm, File, Log, VotedFor
-from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
 def get_current_role():
@@ -59,21 +55,16 @@ def get_voted_for():
 
 
 def get_log():
-    # return cache.get('log')
     return Log.objects.all().order_by('id')
 
 
 def set_log(list_of_log_objects):
-    # cache.set('log', log)
     Log.objects.all().delete()
     for log_object in list_of_log_objects:
         log_object.save()
 
 
 def append_log(list_of_log_objects):
-    # t = cache.get('log')
-    # t.append(log)
-    # cache.set('log', t)
     for log_object in list_of_log_objects:
         log_object.save()
 
@@ -133,64 +124,6 @@ def get_all_neighbours_id():
     return ids
 
 
-def send_to_node(target_id, endpoint, payload):
-    print("Sending to", target_id, endpoint)
-    print(payload.to_dict())
-    target = None
-    for neighbour in NEIGHBOURS:
-        if (neighbour["id"] == target_id):
-            target = neighbour
-            break
-    if (target == None):
-        print(f"FAILED TO SEND TO: {target_id}, id not found")
-        return
-
-    url = neighbour["url"] + endpoint
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    data = json.dumps(payload.to_dict())
-    try:
-        requests.request("POST", url, headers=headers, data=data)
-    except requests.exceptions.ConnectionError:
-        print(f"CONNECTION ERROR: {url}, {data}")
-
-
-def send_file_to_node(target_id, endpoint, file):
-    target = None
-    for neighbour in NEIGHBOURS:
-        if (neighbour["id"] == target_id):
-            target = neighbour
-            break
-    if (target == None):
-        print(f"FAILED TO SEND TO: {target_id}, id not found")
-        return
-
-    url = neighbour["url"] + endpoint
-    try:
-        print("Sending file to", url)
-        requests.request("POST", url, files={'file': file})
-    except requests.exceptions.ConnectionError:
-        print(f"CONNECTION ERROR: {url}, file")
-    except Exception as e:
-        print(e)
-
-
-def broadcast(endpoint, payload):
-    print("Broadcasting", endpoint)
-    print(payload.to_dict())
-    for neighbour in NEIGHBOURS:
-        url = neighbour["url"] + endpoint
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        data = json.dumps(payload.to_dict())
-        try:
-            requests.request("POST", url, headers=headers, data=data)
-        except requests.exceptions.ConnectionError:
-            print(f"CONNECTION ERROR: {url}, {data}")
-
-
 def get_election_timer_id():
     return cache.get('election_timer_id')
 
@@ -211,11 +144,10 @@ def init_persistent_variables():
     set_current_term(0)
     set_voted_for(None)
     set_commit_length(0)
-    # set_log([]) TODO: uncomment this
+    set_log([])
 
 
 def init_volatile_variables():
-    set_log([])  # TODO: remove this
     set_current_role(Role.FOLLOWER)
     set_current_leader(None)
     set_vote_received(set())
@@ -223,30 +155,14 @@ def init_volatile_variables():
     set_acked_length(dict())
 
 
-def save_file(blob, file_id, file_name):
+def save_file(file_blob, file_id, file_name):
     if (File.objects.filter(id=file_id).exists()):
         pass
         # TODO: replace file?
     else:
-        blob_base64 = blob.encode('utf-8')
-        blob_data = base64.b64decode(blob_base64)
-
-        filename = file_name
-        file = InMemoryUploadedFile(
-            BytesIO(blob_data), None, filename, None, len(blob_data), None)
+        file = blob_to_file(file_blob, file_name)
         File.objects.create(id=file_id, uploaded_file=file)
 
 
 def is_file_id_exists(file_id):
     return File.objects.filter(id=file_id).exists()
-
-
-def convert_to_blob(file):
-    file_data = file.read()
-    blob = BytesIO()
-    blob.write(file_data)
-    blob.seek(0)
-    blob_base64 = base64.b64encode(blob.getvalue())
-    blob_string = blob_base64.decode('utf-8')
-
-    return blob_string
