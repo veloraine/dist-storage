@@ -1,6 +1,6 @@
 from django.core.cache import cache
 from storage.constants import NEIGHBOURS, Role
-from storage.utils import blob_to_file
+from storage.utils import memoryview_to_file
 from .models import CommitLength, CurrentTerm, File, Log, VotedFor
 
 
@@ -155,12 +155,12 @@ def init_volatile_variables():
     set_acked_length(dict())
 
 
-def save_file(file_blob, file_id, file_name):
+def save_file(file_memoryview, file_id, file_name):
     if (File.objects.filter(id=file_id).exists()):
         pass
         # TODO: replace file?
     else:
-        file = blob_to_file(file_blob, file_name)
+        file = memoryview_to_file(file_memoryview, file_name)
         File.objects.create(id=file_id, uploaded_file=file)
 
 

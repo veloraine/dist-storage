@@ -131,7 +131,7 @@ def replicate_log(leader_id, follower_id):
     suffix = log[prefix_len:]
     prefix_term = 0
     if prefix_len > 0:
-        prefix_term = log[prefix_len-1]["term"]
+        prefix_term = log[prefix_len-1].term
     send_to_node(follower_id, "/storage/message/log-request", LogRequest(
         leader_id=leader_id,
         current_term=get_current_term(),
@@ -224,7 +224,8 @@ def apply_log(log):
     print("Applying log entry: ", log.file_blob)
     print("with file id: ", log.file_id)
     print("========================================================")
-    save_file(file_blob=log.file_blob.tobytes(),
+    file_memoryview = log.file_blob
+    save_file(file_memoryview=file_memoryview,
               file_name=log.file_name, file_id=log.file_id)
 
 

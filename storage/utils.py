@@ -5,7 +5,7 @@ import json
 import requests
 from storage.constants import NEIGHBOURS
 from django.core.files.uploadedfile import InMemoryUploadedFile
-
+from django.core.files.base import ContentFile
 from storage.models import Log
 
 
@@ -54,12 +54,11 @@ def convert_to_blob(file):
     return blob_string
 
 
-def blob_to_file(blob, file_name):
-    blob_base64 = blob.encode('utf-8')
-    blob_data = base64.b64decode(blob_base64)
+def memoryview_to_file(memoryview, file_name):
+    file_data = memoryview.tobytes()
 
     file = InMemoryUploadedFile(
-        BytesIO(blob_data), None, file_name, None, len(blob_data), None)
+        ContentFile(file_data), None, file_name, None, len(file_data), None)
 
     return file
 
