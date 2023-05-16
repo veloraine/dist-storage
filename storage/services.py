@@ -151,7 +151,6 @@ def send_to_node(target_id, endpoint, payload):
 
 
 def send_file_to_node(target_id, endpoint, file):
-    print("Sending file to", target_id)
     target = None
     for neighbour in NEIGHBOURS:
         if (neighbour["id"] == target_id):
@@ -163,9 +162,12 @@ def send_file_to_node(target_id, endpoint, file):
 
     url = neighbour["url"] + endpoint
     try:
+        print("Sending file to", url)
         requests.request("POST", url, files={'file': file})
     except requests.exceptions.ConnectionError:
         print(f"CONNECTION ERROR: {url}, file")
+    except Exception as e:
+        print(e)
 
 
 def broadcast(endpoint, payload):
