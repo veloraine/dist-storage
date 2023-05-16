@@ -126,11 +126,18 @@ def vote_response(request):
 
 
 @api_view(['POST'])
-def start(request):
+def initialize(request):
     init_persistent_variables()
     init_volatile_variables()
     restart_election_timer()
     return response(data={'message': 'Node started successfully'})
+
+
+@api_view(['POST'])
+def start_from_crash(request):
+    init_volatile_variables()
+    restart_election_timer()
+    return response(data={'message': 'Node restarted successfully'})
 
 
 @api_view(['GET'])

@@ -184,12 +184,12 @@ def set_heartbeat_timer_id(task_id):
 def init_persistent_variables():
     set_current_term(0)
     set_voted_for(None)
-    set_log([])
     set_commit_length(0)
+    # set_log([]) TODO: uncomment this
 
 
 def init_volatile_variables():
-
+    set_log([])  # TODO: remove this
     set_current_role(Role.FOLLOWER)
     set_current_leader(None)
     set_vote_received(set())
