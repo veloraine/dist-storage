@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 from rest_framework.decorators import api_view
 from dist_storage.utils import response, validate_body, validate_params
 from storage.raft import on_receive_log_request, on_receive_log_response, on_receive_vote_request, on_receive_vote_response, request_to_broadcast, restart_election_timer
@@ -56,6 +57,7 @@ def broadcast_request(request):
         file_blob=message["file_blob"].encode(),
         file_name=message["file_name"]
     )
+    return response(data={'message': 'Broadcast request received'})
 
 
 @api_view(['POST'])
@@ -130,7 +132,7 @@ def get_variable(request):
         "current_term": get_current_term(),
         "voted_for": get_voted_for(),
         "vote_received": get_vote_received(),
-        "log": get_log(),
+        "log": [model_to_dict(log, exclude=['id']) for log in get_log()],
         "sent_length": get_sent_length(),
         "acked_length": get_acked_length(),
         "commit_length": get_commit_length(),
