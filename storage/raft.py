@@ -181,7 +181,7 @@ def append_entries(prefix_len, leader_commit, suffix):
             set_log(get_log()[:prefix_len-1])
     if prefix_len + len(suffix) > len(get_log()):
         for i in range(len(get_log()) - prefix_len, len(suffix)):
-            append_log(suffix[i])
+            append_log([suffix[i]])
     if leader_commit > get_commit_length():
         for i in range(get_commit_length(), leader_commit):
             apply_log(get_log()[i])
