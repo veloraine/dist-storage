@@ -81,6 +81,8 @@ def set_sent_length_at(id, value):
 
 def get_sent_length_at(id):
     sent_length = cache.get('sent_length')
+    if sent_length[id] is None:
+        return 0
     return sent_length[id]
 
 
@@ -100,6 +102,8 @@ def set_acked_length_at(id, value):
 
 def get_acked_length_at(id):
     acked_length = cache.get('acked_length')
+    if acked_length[id] is None:
+        return 0
     return acked_length[id]
 
 
