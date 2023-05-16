@@ -48,11 +48,7 @@ def broadcast(endpoint, payload):
 
 
 def convert_to_blob(file):
-    file_data = file.read()
-    blob = BytesIO()
-    blob.write(file_data)
-    blob.seek(0)
-    blob_base64 = base64.b64encode(blob.getvalue())
+    blob_base64 = base64.b64encode(file.read())
     blob_string = blob_base64.decode('utf-8')
 
     return blob_string

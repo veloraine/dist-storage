@@ -224,7 +224,7 @@ def apply_log(log):
     print("Applying log entry: ", log.file_blob)
     print("with file id: ", log.file_id)
     print("========================================================")
-    save_file(file_blob=log.file_blob,
+    save_file(file_blob=log.file_blob.tobytes(),
               file_name=log.file_name, file_id=log.file_id)
 
 
