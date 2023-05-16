@@ -45,9 +45,13 @@ from django.core.cache import cache
 
 @api_view(['POST'])
 def broadcast_request(request):
-    is_valid = validate_body(request, ['file', 'file_id'])
-    if not is_valid:
+    is_valid = validate_body(request, ['file'])
+    if is_valid:
         return is_valid
+    is_valid = validate_params(request, ['file_id'])
+    if is_valid:
+        return is_valid
+
     file_id = request.GET['file_id']
     if is_file_id_exists(file_id):
         return response(data={'message': 'File id already exists'}, status=400)
