@@ -60,7 +60,7 @@ def get_voted_for():
 
 def get_log():
     # return cache.get('log')
-    return Log.Objects.all().order_by('id')
+    return Log.objects.all().order_by('id')
 
 
 def set_log(list_of_log_objects):
