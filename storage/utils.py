@@ -47,7 +47,7 @@ def broadcast(endpoint, payload):
             print(f"CONNECTION ERROR: {url}, {data}")
 
 
-def convert_to_blob(file):
+def convert_to_blob_bytes(file):
     return file.read()
 
 
