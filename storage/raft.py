@@ -111,6 +111,7 @@ def on_receive_vote_response(voter_id, term, vote_granted):
 
 def request_to_broadcast(file, file_name, file_id):
     if get_current_role() == Role.LEADER:
+        print(f"Got request to broadcast {file_name}")
         append_log(LogEntry(get_current_term(),
                             file=file, file_name=file_name, file_id=file_id).to_dict())
         set_acked_length_at(SELF_UUID, len(get_log()))
