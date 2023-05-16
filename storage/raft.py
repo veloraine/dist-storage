@@ -99,12 +99,12 @@ def request_to_broadcast(file_id, file_blob, file_name):
         print(f"AAAAAAAAAA Got request to broadcast {file_id}")
         print(f"AAAAAAAAAA file_name ", file_name)
         print(f"AAAAAAAAAA blob ", file_blob)
-        append_log(Log(
+        append_log([Log(
             term=get_current_term(),
             file_blob=file_blob,
             file_name=file_name,
             file_id=file_id
-        ))
+        )])
         set_acked_length_at(SELF_UUID, len(get_log()))
         for follower in get_all_neighbours_id():
             replicate_log(SELF_UUID, follower)
