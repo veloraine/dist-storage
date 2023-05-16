@@ -21,4 +21,8 @@ NEIGHBOURS = [
         "id": os.environ.get("URL_2"),
         "url": os.environ.get("URL_2")
     },
+    {
+        "id": os.environ.get("URL_3"),
+        "url": os.environ.get("URL_3")
+    },
 ]
