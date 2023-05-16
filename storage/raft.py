@@ -24,7 +24,7 @@ def election_procedure():
     last_term = 0
     log = get_log()
     if len(log) > 0:
-        last_term = log[-1]["term"]
+        last_term = log.last().term
 
     broadcast(
         "/storage/message/vote-request",
@@ -49,7 +49,7 @@ def on_receive_vote_request(c_id, c_term, c_log_length, c_log_term):
     last_term = 0
     log = get_log()
     if len(log) > 0:
-        last_term = log[-1]["term"]
+        last_term = log.last().term
     log_ok = ((c_log_term > last_term)
               or (c_log_term == last_term and c_log_length >= len(log)))
 
@@ -154,7 +154,7 @@ def on_receive_log_request(leader_id, term, prefix_length, prefix_term, leader_c
         set_current_leader(leader_id)
     log = get_log()
     log_ok = ((len(log) >= prefix_length)
-              and (prefix_length == 0 or log[prefix_length-1]["term"] == prefix_term))
+              and (prefix_length == 0 or log[prefix_length-1].term == prefix_term))
     if term == get_current_term() and log_ok:
         append_entries(prefix_length, leader_commit, suffix)
         ack = prefix_length + len(suffix)
@@ -177,7 +177,7 @@ def on_receive_log_request(leader_id, term, prefix_length, prefix_term, leader_c
 def append_entries(prefix_len, leader_commit, suffix):
     if len(suffix) > 0 and len(get_log()) > prefix_len:
         index = min(len(get_log()), prefix_len + len(suffix)) - 1
-        if get_log()[index]["term"] != suffix[index - prefix_len]["term"]:
+        if get_log()[index].term != suffix[index - prefix_len].term:
             set_log(get_log()[:prefix_len-1])
     if prefix_len + len(suffix) > len(get_log()):
         for i in range(len(get_log()) - prefix_len, len(suffix)):
