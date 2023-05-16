@@ -124,7 +124,7 @@ def request_to_broadcast(file, file_id):
     else:
         # Forward request to currentLeader
         send_file_to_node(get_current_leader(
-        ), f"/storage/broadcast-request/?file_id={file_id}", file)
+        ), f"/storage/broadcast-request?file_id={file_id}", file)
 
 
 def heartbeat_procedure():
