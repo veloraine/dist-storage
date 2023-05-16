@@ -48,10 +48,7 @@ def broadcast(endpoint, payload):
 
 
 def convert_to_blob(file):
-    blob_base64 = base64.b64encode(file.read())
-    blob_string = blob_base64.decode('utf-8')
-
-    return blob_string
+    return file.read()
 
 
 def memoryview_to_file(memoryview, file_name):

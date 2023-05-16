@@ -31,7 +31,7 @@ def upload_file(request):
     blob = convert_to_blob(file)
     request_to_broadcast(
         file_id=file_id,
-        file_blob=blob.encode(),
+        file_blob=blob,
         file_name=file.name
     )
     return response(data={'message': 'File uploaded successfully'})
