@@ -75,13 +75,9 @@ def dict_to_log(dict_log):
 
 
 def log_to_dict(log):
-    data = {
+    return {
         'term': log.term,
         'file_blob': memoryview_to_blob_string(log.file_blob),
         'file_id': log.file_id,
         'file_name': log.file_name
     }
-    # term = models.IntegerField()
-    # file_blob = models.BinaryField()
-    # file_id = models.IntegerField()
-    # file_name = models.CharField(max_length=30)
