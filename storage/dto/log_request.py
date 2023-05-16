@@ -1,3 +1,6 @@
+from django.forms import model_to_dict
+
+
 class LogRequest:
     def __init__(self, leader_id, current_term, prefix_len, prefix_term, commit_length, suffix):
         self.leader_id = leader_id
@@ -14,5 +17,5 @@ class LogRequest:
             'prefix_len': self.prefix_len,
             'prefix_term': self.prefix_term,
             'commit_length': self.commit_length,
-            'suffix': self.suffix
+            'suffix': [model_to_dict(log, exclude=['id']) for log in self.suffix]
         }

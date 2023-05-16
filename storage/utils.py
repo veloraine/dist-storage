@@ -6,6 +6,8 @@ import requests
 from storage.constants import NEIGHBOURS
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
+from storage.models import Log
+
 
 def send_to_node(target_id, endpoint, payload):
     print("Sending to", target_id, endpoint)
@@ -64,3 +66,10 @@ def blob_to_file(blob, file_name):
         BytesIO(blob_data), None, file_name, None, len(blob_data), None)
 
     return file
+
+
+def list_of_dict_to_log(list_of_dict):
+    list_of_model = []
+    for d in list_of_dict:
+        list_of_model.append(Log(**d))
+    return list_of_model
