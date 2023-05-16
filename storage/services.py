@@ -145,12 +145,27 @@ def send_to_node(target_id, endpoint, payload):
     }
     data = json.dumps(payload.to_dict())
     try:
-        print("Sending to", url, data)
         requests.request("POST", url, headers=headers, data=data)
     except requests.exceptions.ConnectionError:
         print(f"CONNECTION ERROR: {url}, {data}")
-    except Exception as e:
-        print(f"ERROR: {e}")
+
+
+def send_file_to_node(target_id, endpoint, file):
+    print("Sending file to", target_id)
+    target = None
+    for neighbour in NEIGHBOURS:
+        if (neighbour["id"] == target_id):
+            target = neighbour
+            break
+    if (target == None):
+        print(f"FAILED TO SEND TO: {target_id}, id not found")
+        return
+
+    url = neighbour["url"] + endpoint
+    try:
+        requests.request("POST", url, files={'file': file})
+    except requests.exceptions.ConnectionError:
+        print(f"CONNECTION ERROR: {url}, file")
 
 
 def broadcast(endpoint, payload):

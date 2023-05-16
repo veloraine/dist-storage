@@ -57,13 +57,10 @@ def broadcast_request(request):
         return response(data={'message': 'File id already exists'}, status=400)
 
     file = request.FILES['file']
-    file_name = file.name
-    blob = convert_to_blob(file)
 
     request_to_broadcast(
         file_id=file_id,
-        file_name=file_name,
-        file=blob
+        file=file
     )
     return response(data={'message': 'File uploaded successfully'})
 

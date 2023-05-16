@@ -9,7 +9,7 @@ from storage.dto.log_request import LogRequest
 from storage.dto.log_response import LogResponse
 from storage.dto.vote_request import VoteRequest
 from storage.dto.vote_response import VoteResponse
-from storage.services import add_vote_recieved, broadcast, append_log, get_acked_length_at, get_all_neighbours_id, get_commit_length, get_current_leader, get_current_role, get_current_term, get_election_timer_id, get_heartbeat_timer_id, get_log, get_sent_length_at, get_vote_received, get_voted_for, save_file, send_to_node, set_acked_length_at, set_commit_length, set_current_leader, set_current_role, set_current_term, set_election_timer_id, set_heartbeat_timer_id, set_log, set_sent_length_at, set_vote_received, set_voted_for
+from storage.services import add_vote_recieved, broadcast, append_log, convert_to_blob, get_acked_length_at, get_all_neighbours_id, get_commit_length, get_current_leader, get_current_role, get_current_term, get_election_timer_id, get_heartbeat_timer_id, get_log, get_sent_length_at, get_vote_received, get_voted_for, save_file, send_file_to_node, send_to_node, set_acked_length_at, set_commit_length, set_current_leader, set_current_role, set_current_term, set_election_timer_id, set_heartbeat_timer_id, set_log, set_sent_length_at, set_vote_received, set_voted_for
 
 
 class LogEntry:
@@ -109,21 +109,20 @@ def on_receive_vote_response(voter_id, term, vote_granted):
         cancel_election_timer()
 
 
-def request_to_broadcast(file, file_name, file_id):
+def request_to_broadcast(file, file_id):
     if get_current_role() == Role.LEADER:
-        print(f"Got request to broadcast {file_name}")
+        print(f"Got request to broadcast {file_id}")
+        file_name = file.name
+        blob = convert_to_blob(file)
         append_log(LogEntry(get_current_term(),
-                            file=file, file_name=file_name, file_id=file_id).to_dict())
+                            file=blob, file_name=file_name, file_id=file_id).to_dict())
         set_acked_length_at(SELF_UUID, len(get_log()))
         for follower in get_all_neighbours_id():
             replicate_log(SELF_UUID, follower)
     else:
         # Forward request to currentLeader
-        send_to_node(get_current_leader(), "/storage/broadcast-request", LogEntryPayload(
-            file=file,
-            file_name=file_name,
-            file_id=file_id
-        ))
+        send_file_to_node(get_current_leader(
+        ), f"/storage/broadcast-request/?file_id={file_id}", file)
 
 
 def heartbeat_procedure():
