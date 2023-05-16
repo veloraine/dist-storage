@@ -1,5 +1,5 @@
 from math import ceil
-from storage.dto.log_entry_payload import LogEntryPayload
+from storage.models import Log
 
 import storage.timer
 from .tasks import app
@@ -12,20 +12,20 @@ from storage.dto.vote_response import VoteResponse
 from storage.services import add_vote_recieved, broadcast, append_log, convert_to_blob, get_acked_length_at, get_all_neighbours_id, get_commit_length, get_current_leader, get_current_role, get_current_term, get_election_timer_id, get_heartbeat_timer_id, get_log, get_sent_length_at, get_vote_received, get_voted_for, save_file, send_file_to_node, send_to_node, set_acked_length_at, set_commit_length, set_current_leader, set_current_role, set_current_term, set_election_timer_id, set_heartbeat_timer_id, set_log, set_sent_length_at, set_vote_received, set_voted_for
 
 
-class LogEntry:
-    def __init__(self, term, file, file_id, file_name):
-        self.term = term
-        self.file = file
-        self.file_id = file_id
-        self.file_name = file_name
+# class LogEntry:
+#     def __init__(self, term, file, file_id, file_name):
+#         self.term = term
+#         self.file = file
+#         self.file_id = file_id
+#         self.file_name = file_name
 
-    def to_dict(self):
-        return {
-            'term': self.term,
-            'file': self.file,
-            'file_id': self.file_id,
-            'file_name': self.file_name
-        }
+#     def to_dict(self):
+#         return {
+#             'term': self.term,
+#             'file': self.file,
+#             'file_id': self.file_id,
+#             'file_name': self.file_name
+#         }
 
 
 def election_procedure():
@@ -116,8 +116,14 @@ def request_to_broadcast(file, file_id):
         print(f"AAAAAAAAAA file_name ", file_name)
         blob = convert_to_blob(file)
         print(f"AAAAAAAAAA blob ", blob)
-        append_log(LogEntry(get_current_term(),
-                            file=blob, file_name=file_name, file_id=file_id).to_dict())
+        append_log(Log(
+            term=get_current_term(),
+            file=blob,
+            file_name=file_name,
+            file_id=file_id
+        ))
+        # append_log(LogEntry(get_current_term(),
+        #                     file=blob, file_name=file_name, file_id=file_id).to_dict())
         set_acked_length_at(SELF_UUID, len(get_log()))
         for follower in get_all_neighbours_id():
             replicate_log(SELF_UUID, follower)

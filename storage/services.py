@@ -4,7 +4,7 @@ import json
 import requests
 from django.core.cache import cache
 from storage.constants import NEIGHBOURS, Role
-from .models import CommitLength, CurrentTerm, File, VotedFor
+from .models import CommitLength, CurrentTerm, File, Log, VotedFor
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 
@@ -59,17 +59,23 @@ def get_voted_for():
 
 
 def get_log():
-    return cache.get('log')
+    # return cache.get('log')
+    return Log.Objects.all().order_by('id')
 
 
-def set_log(log):
-    cache.set('log', log)
+def set_log(list_of_log_objects):
+    # cache.set('log', log)
+    Log.objects.all().delete()
+    for log_object in list_of_log_objects:
+        log_object.save()
 
 
-def append_log(log):
-    t = cache.get('log')
-    t.append(log)
-    cache.set('log', t)
+def append_log(list_of_log_objects):
+    # t = cache.get('log')
+    # t.append(log)
+    # cache.set('log', t)
+    for log_object in list_of_log_objects:
+        log_object.save()
 
 
 def set_sent_length(length):
