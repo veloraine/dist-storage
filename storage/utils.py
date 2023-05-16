@@ -66,14 +66,12 @@ def memoryview_to_blob_string(memory_view):
 
 
 def dict_to_log(dict_log):
-    logs = []
-    for d in dict_log:
-        Log(
-            term=dict_log['term'],
-            file_blob=base64.b64decode(dict_log['file_blob']),
-            file_id=dict_log['file_id'],
-            file_name=dict_log['file_name']
-        )
+    return Log(
+        term=dict_log['term'],
+        file_blob=base64.b64decode(dict_log['file_blob']),
+        file_id=dict_log['file_id'],
+        file_name=dict_log['file_name']
+    )
 
 
 def log_to_dict(log):
