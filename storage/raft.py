@@ -1,3 +1,4 @@
+import base64
 from math import ceil
 from storage.models import Log
 import storage.timer
@@ -113,7 +114,7 @@ def request_to_broadcast(file_id, file_blob, file_name):
         send_to_node(get_current_leader(),
                      f"/storage/message/broadcast-request",
                      BroadcastRequest(
-                         file_blob=file_blob,
+                         file_blob=base64.b64encode(file_blob).decode('utf-8'),
                          file_name=file_name,
                          file_id=file_id
         ))
