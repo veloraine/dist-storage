@@ -53,7 +53,7 @@ def broadcast_request(request):
     message = request.data
     request_to_broadcast(
         file_id=message["file_id"],
-        file_blob=message["file_blob"],
+        file_blob=message["file_blob"].encode(),
         file_name=message["file_name"]
     )
 
