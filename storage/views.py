@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from dist_storage.utils import response, validate_body, validate_params
 from storage.raft import on_receive_log_request, on_receive_log_response, on_receive_vote_request, on_receive_vote_response, request_to_broadcast, restart_election_timer
 from storage.services import get_acked_length, get_all_neighbours_id, get_commit_length, get_current_leader, get_current_role, get_current_term, get_log, get_sent_length, get_vote_received, get_voted_for, init_persistent_variables, init_volatile_variables, is_file_id_exists
-from storage.utils import convert_to_blob_bytes, list_of_dict_to_log
+from storage.utils import convert_to_blob_bytes, dict_to_log
 from .models import File
 from django.http import FileResponse
 
@@ -70,7 +70,7 @@ def log_request(request):
         prefix_length=message["prefix_len"],
         prefix_term=message["prefix_term"],
         leader_commit=message["commit_length"],
-        suffix=list_of_dict_to_log(message["suffix"])
+        suffix=[dict_to_log(x) for x in message["suffix"]]
     )
     return response(data={'message': 'Log request received'})
 
