@@ -8,6 +8,7 @@ services:
         URL_0: ${URL_0}
         URL_1: ${URL_1}
         URL_2: ${URL_2}
+        URL_3: ${URL_3}
     ports:
       - ${PORT}:8000
     volumes:
@@ -25,6 +26,7 @@ services:
         URL_0: ${URL_0}
         URL_1: ${URL_1}
         URL_2: ${URL_2}
+        URL_3: ${URL_3}
     volumes:
       - .:/app
     command: celery -A storage.tasks worker -Q timer_election -l INFO
@@ -39,6 +41,7 @@ services:
         URL_0: ${URL_0}
         URL_1: ${URL_1}
         URL_2: ${URL_2}
+        URL_3: ${URL_3}
     volumes:
       - .:/app
     command: celery -A storage.tasks worker -Q timer_heartbeat -l INFO
