@@ -1,0 +1,60 @@
+version: "1"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        URL_0: ${URL_0}
+        URL_1: ${URL_1}
+        URL_2: ${URL_2}
+        URL_3: ${URL_3}
+    ports:
+      - ${PORT}:8000
+    volumes:
+      - .:/app
+    depends_on:
+      - celery_election
+      - celery_heartbeat
+      - db
+      - redis
+  celery_election:
+    build:
+      context: .
+      dockerfile: celery.Dockerfile
+      args:
+        URL_0: ${URL_0}
+        URL_1: ${URL_1}
+        URL_2: ${URL_2}
+        URL_3: ${URL_3}
+    volumes:
+      - .:/app
+    command: celery -A storage.tasks worker -Q timer_election -l INFO
+    depends_on:
+      - db
+      - redis
+  celery_heartbeat:
+    build:
+      context: .
+      dockerfile: celery.Dockerfile
+      args:
+        URL_0: ${URL_0}
+        URL_1: ${URL_1}
+        URL_2: ${URL_2}
+        URL_3: ${URL_3}
+    volumes:
+      - .:/app
+    command: celery -A storage.tasks worker -Q timer_heartbeat -l INFO
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=db_user
+      - POSTGRES_PASSWORD=db_password
+      - POSTGRES_DB=raft
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+  redis:
+    image: redis:latest
