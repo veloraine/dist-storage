@@ -7,6 +7,7 @@ from storage.services import get_acked_length, get_all_neighbours_id, get_commit
 from storage.utils import convert_to_blob_bytes, dict_to_log
 from .models import File
 from django.http import FileResponse
+from .serializers import FileSerializer
 
 
 @api_view(['POST'])
@@ -41,7 +42,7 @@ def upload_file(request):
 @api_view(['GET'])
 def get_all_file(request):
     files = File.objects.all()
-    return response(data={'files': str(files)})
+    return response(data = FileSerializer(files, many=True).data, status=200)
 
 
 @api_view(['GET'])
