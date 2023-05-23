@@ -97,9 +97,6 @@ def on_receive_vote_response(voter_id, term, vote_granted):
 
 def request_to_broadcast(file_id, file_blob, file_name):
     if get_current_role() == Role.LEADER:
-        print(f"AAAAAAAAAA Got request to broadcast {file_id}")
-        print(f"AAAAAAAAAA file_name ", file_name)
-        print(f"AAAAAAAAAA blob ", file_blob)
         append_log([Log(
             term=get_current_term(),
             file_blob=file_blob,
@@ -179,7 +176,10 @@ def append_entries(prefix_len, leader_commit, suffix):
     if len(suffix) > 0 and len(get_log()) > prefix_len:
         index = min(len(get_log()), prefix_len + len(suffix)) - 1
         if get_log()[index].term != suffix[index - prefix_len].term:
-            set_log(get_log()[:prefix_len-1])
+            if prefix_len < 1:
+                pass
+            else:
+                set_log(get_log()[:prefix_len])
     if prefix_len + len(suffix) > len(get_log()):
         for i in range(len(get_log()) - prefix_len, len(suffix)):
             append_log([suffix[i]])
