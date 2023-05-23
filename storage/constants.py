@@ -1,8 +1,8 @@
 from enum import Enum
 import os
 
-HEARTBEAT_DURATION = 30
-ELECTION_DURATION = 30
+HEARTBEAT_DURATION = 5
+ELECTION_DURATION = 5
 
 
 class Role(Enum):
