@@ -80,7 +80,7 @@ def on_receive_vote_response(voter_id, term, vote_granted):
         if len(get_vote_received()) >= ceil((len(get_all_neighbours_id())+2) / 2):
             set_current_role(Role.LEADER)
             set_current_leader(SELF_UUID)
-            cancel_election_timer()
+            restart_election_timer()
             for follower in get_all_neighbours_id():
                 set_sent_length_at(follower, len(get_log()))
                 set_acked_length_at(follower, 0)
@@ -92,7 +92,7 @@ def on_receive_vote_response(voter_id, term, vote_granted):
         set_current_term(term)
         set_current_role(Role.FOLLOWER)
         set_voted_for(None)
-        cancel_election_timer()
+        restart_election_timer()
 
 
 def request_to_broadcast(file_id, file_blob, file_name):
@@ -146,7 +146,7 @@ def on_receive_log_request(leader_id, term, prefix_length, prefix_term, leader_c
     if term > get_current_term():
         set_current_term(term)
         set_voted_for(None)
-        cancel_election_timer()
+        restart_election_timer()
     if term == get_current_term():
         set_current_role(Role.FOLLOWER)
         set_current_leader(leader_id)
@@ -204,7 +204,7 @@ def on_receive_log_response(follower, term, ack, success):
         set_current_term(term)
         set_current_role(Role.FOLLOWER)
         set_voted_for(None)
-        cancel_election_timer()
+        restart_election_timer()
 
 
 def commit_log_entries():
