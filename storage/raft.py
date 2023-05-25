@@ -77,7 +77,7 @@ def on_receive_vote_response(voter_id, term, vote_granted):
     # Collecting vote
     if get_current_role() == Role.CANDIDATE and term == get_current_term() and vote_granted:
         add_vote_recieved(voter_id)
-        if len(get_vote_received()) >= ceil((len(get_all_neighbours_id())+2) / 2):
+        if len(get_vote_received()) >= ceil((len(get_all_neighbours_id())+1) / 2):
             set_current_role(Role.LEADER)
             set_current_leader(SELF_UUID)
             cancel_election_timer()
