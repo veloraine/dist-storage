@@ -93,7 +93,6 @@ def on_receive_vote_response(voter_id, term, vote_granted):
         set_current_role(Role.FOLLOWER)
         set_voted_for(None)
         cancel_election_timer()
-        restart_election_timer()
 
 
 def request_to_broadcast(file_id, file_blob, file_name):
@@ -206,7 +205,6 @@ def on_receive_log_response(follower, term, ack, success):
         set_current_role(Role.FOLLOWER)
         set_voted_for(None)
         cancel_election_timer()
-        restart_election_timer()
 
 
 def commit_log_entries():
