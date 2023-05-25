@@ -81,7 +81,6 @@ def on_receive_vote_response(voter_id, term, vote_granted):
             set_current_role(Role.LEADER)
             set_current_leader(SELF_UUID)
             cancel_election_timer()
-            restart_election_timer()
             for follower in get_all_neighbours_id():
                 set_sent_length_at(follower, len(get_log()))
                 set_acked_length_at(follower, 0)
@@ -149,7 +148,6 @@ def on_receive_log_request(leader_id, term, prefix_length, prefix_term, leader_c
         set_current_term(term)
         set_voted_for(None)
         cancel_election_timer()
-        restart_election_timer()
     if term == get_current_term():
         set_current_role(Role.FOLLOWER)
         set_current_leader(leader_id)
@@ -172,7 +170,6 @@ def on_receive_log_request(leader_id, term, prefix_length, prefix_term, leader_c
             ack=0,
             flag=False
         ))
-    cancel_election_timer()
     restart_election_timer()
 
 
