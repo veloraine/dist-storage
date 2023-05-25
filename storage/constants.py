@@ -2,7 +2,7 @@ from enum import Enum
 import os
 
 HEARTBEAT_DURATION = 5
-ELECTION_DURATION = 35
+ELECTION_DURATION = 13
 
 
 class Role(Enum):
