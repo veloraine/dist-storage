@@ -213,7 +213,7 @@ def commit_log_entries():
         for follower in get_all_neighbours_id():
             if get_acked_length_at(follower) > get_commit_length():
                 acks += 1
-        if acks >= ceil((len(get_all_neighbours_id())+2) / 2):
+        if acks >= ceil((len(get_all_neighbours_id())+1) / 2):
             apply_log(get_log()[get_commit_length()])
             set_commit_length(get_commit_length() + 1)
         else:
