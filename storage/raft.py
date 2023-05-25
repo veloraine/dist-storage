@@ -249,7 +249,7 @@ def restart_election_timer():
     if task_id:
         app.control.revoke(task_id, terminate=True)
     set_election_timer_id(storage.timer.election.apply_async(countdown=random.randint(
-        ELECTION_DURATION, ELECTION_DURATION+30)).id)
+        ELECTION_DURATION, ELECTION_DURATION+10)).id)
 
 
 def cancel_election_timer():

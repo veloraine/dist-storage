@@ -16,4 +16,4 @@ def heartbeat():
 def election():
     storage.raft.election_procedure()
     set_election_timer_id(storage.timer.election.apply_async(countdown=random.randint(
-        ELECTION_DURATION, ELECTION_DURATION+30)).id)
+        ELECTION_DURATION, ELECTION_DURATION+10)).id)
